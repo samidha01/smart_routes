@@ -1,0 +1,223 @@
+{
+  "bikes": {
+    "Hero": {
+      "Splendor Plus": { "mileage": 60, "fuel_type": "petrol", "engine_cc": 97 },
+      "HF Deluxe": { "mileage": 65, "fuel_type": "petrol", "engine_cc": 97 },
+      "Passion Pro": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 97 },
+      "Glamour": { "mileage": 50, "fuel_type": "petrol", "engine_cc": 125 },
+      "Xtreme 160R": { "mileage": 45, "fuel_type": "petrol", "engine_cc": 163 },
+      "Destini 125": { "mileage": 51, "fuel_type": "petrol", "engine_cc": 125 }
+    },
+    "Honda": {
+      "Activa 6G": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 109 },
+      "CB Shine": { "mileage": 50, "fuel_type": "petrol", "engine_cc": 124 },
+      "CB Hornet 200R": { "mileage": 40, "fuel_type": "petrol", "engine_cc": 200 },
+      "SP 125": { "mileage": 65, "fuel_type": "petrol", "engine_cc": 124 },
+      "Unicorn": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 162 },
+      "CB300R": { "mileage": 35, "fuel_type": "petrol", "engine_cc": 286 }
+    },
+    "Bajaj": {
+      "Pulsar 150": { "mileage": 45, "fuel_type": "petrol", "engine_cc": 149 },
+      "Pulsar NS200": { "mileage": 35, "fuel_type": "petrol", "engine_cc": 199 },
+      "Dominar 400": { "mileage": 30, "fuel_type": "petrol", "engine_cc": 373 },
+      "CT 100": { "mileage": 70, "fuel_type": "petrol", "engine_cc": 102 },
+      "Platina 110": { "mileage": 65, "fuel_type": "petrol", "engine_cc": 115 },
+      "Avenger Street 160": { "mileage": 42, "fuel_type": "petrol", "engine_cc": 160 }
+    },
+    "Royal Enfield": {
+      "Classic 350": { "mileage": 35, "fuel_type": "petrol", "engine_cc": 349 },
+      "Bullet 350": { "mileage": 35, "fuel_type": "petrol", "engine_cc": 346 },
+      "Meteor 350": { "mileage": 36, "fuel_type": "petrol", "engine_cc": 349 },
+      "Himalayan": { "mileage": 30, "fuel_type": "petrol", "engine_cc": 411 },
+      "Thunderbird 500X": { "mileage": 28, "fuel_type": "petrol", "engine_cc": 499 }
+    },
+    "TVS": {
+      "Apache RTR 200": { "mileage": 40, "fuel_type": "petrol", "engine_cc": 197 },
+      "Jupiter": { "mileage": 52, "fuel_type": "petrol", "engine_cc": 110 },
+      "Ntorq 125": { "mileage": 47, "fuel_type": "petrol", "engine_cc": 125 },
+      "Raider 125": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 124 },
+      "Star City Plus": { "mileage": 60, "fuel_type": "petrol", "engine_cc": 110 }
+    },
+    "Yamaha": {
+      "FZ-S V3": { "mileage": 45, "fuel_type": "petrol", "engine_cc": 149 },
+      "R15 V4": { "mileage": 40, "fuel_type": "petrol", "engine_cc": 155 },
+      "MT-15": { "mileage": 42, "fuel_type": "petrol", "engine_cc": 155 },
+      "Fascino 125": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 125 },
+      "SZ-RR": { "mileage": 50, "fuel_type": "petrol", "engine_cc": 153 }
+    },
+    "Suzuki": {
+      "Access 125": { "mileage": 55, "fuel_type": "petrol", "engine_cc": 124 },
+      "Gixxer 250": { "mileage": 38, "fuel_type": "petrol", "engine_cc": 249 },
+      "Burgman Street": { "mileage": 50, "fuel_type": "petrol", "engine_cc": 124 }
+    },
+    "Ola Electric": {
+      "S1 Pro": { "mileage": 0, "fuel_type": "electric", "range_km": 181, "engine_cc": 0 },
+      "S1 Air": { "mileage": 0, "fuel_type": "electric", "range_km": 101, "engine_cc": 0 }
+    },
+    "Ather": {
+      "450X": { "mileage": 0, "fuel_type": "electric", "range_km": 146, "engine_cc": 0 },
+      "450S": { "mileage": 0, "fuel_type": "electric", "range_km": 108, "engine_cc": 0 }
+    }
+  },
+  "cars": {
+    "Maruti Suzuki": {
+      "Alto 800": { "mileage": 22, "fuel_type": "petrol", "engine_cc": 796, "seats": 4 },
+      "Swift": { "mileage": 23, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Swift Dzire": { "mileage": 24, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Baleno": { "mileage": 22, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Ertiga": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1462, "seats": 7 },
+      "Brezza": { "mileage": 19, "fuel_type": "petrol", "engine_cc": 1462, "seats": 5 },
+      "Ciaz": { "mileage": 21, "fuel_type": "petrol", "engine_cc": 1462, "seats": 5 },
+      "Wagon R": { "mileage": 21, "fuel_type": "petrol", "engine_cc": 998, "seats": 5 },
+      "Celerio": { "mileage": 26, "fuel_type": "petrol", "engine_cc": 998, "seats": 5 },
+      "S-Presso": { "mileage": 25, "fuel_type": "petrol", "engine_cc": 998, "seats": 5 },
+      "Jimny": { "mileage": 16, "fuel_type": "petrol", "engine_cc": 1462, "seats": 4 },
+      "Grand Vitara": { "mileage": 19, "fuel_type": "petrol", "engine_cc": 1490, "seats": 5 }
+    },
+    "Hyundai": {
+      "i10 Nios": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "i20": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Venue": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Creta": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 1497, "seats": 5 },
+      "Alcazar": { "mileage": 14, "fuel_type": "petrol", "engine_cc": 1999, "seats": 7 },
+      "Verna": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1497, "seats": 5 },
+      "Tucson": { "mileage": 14, "fuel_type": "petrol", "engine_cc": 2497, "seats": 5 },
+      "Exter": { "mileage": 19, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 }
+    },
+    "Tata": {
+      "Tiago": { "mileage": 19, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "Tigor": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "Nexon": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "Harrier": { "mileage": 14, "fuel_type": "petrol", "engine_cc": 1956, "seats": 5 },
+      "Safari": { "mileage": 14, "fuel_type": "petrol", "engine_cc": 1956, "seats": 7 },
+      "Punch": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "Nexon EV": { "mileage": 0, "fuel_type": "electric", "range_km": 465, "seats": 5 },
+      "Tiago EV": { "mileage": 0, "fuel_type": "electric", "range_km": 315, "seats": 5 }
+    },
+    "Kia": {
+      "Sonet": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Seltos": { "mileage": 16, "fuel_type": "petrol", "engine_cc": 1497, "seats": 5 },
+      "Carens": { "mileage": 16, "fuel_type": "petrol", "engine_cc": 1497, "seats": 7 },
+      "EV6": { "mileage": 0, "fuel_type": "electric", "range_km": 528, "seats": 5 }
+    },
+    "Toyota": {
+      "Innova Crysta": { "mileage": 13, "fuel_type": "diesel", "engine_cc": 2393, "seats": 7 },
+      "Innova HyCross": { "mileage": 21, "fuel_type": "hybrid", "engine_cc": 1987, "seats": 7 },
+      "Fortuner": { "mileage": 10, "fuel_type": "diesel", "engine_cc": 2755, "seats": 7 },
+      "Camry": { "mileage": 19, "fuel_type": "hybrid", "engine_cc": 2487, "seats": 5 },
+      "Glanza": { "mileage": 22, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Hyryder": { "mileage": 21, "fuel_type": "hybrid", "engine_cc": 1490, "seats": 5 }
+    },
+    "Honda": {
+      "City": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 1498, "seats": 5 },
+      "Amaze": { "mileage": 20, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "WR-V": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 },
+      "Jazz": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 1199, "seats": 5 }
+    },
+    "Mahindra": {
+      "Scorpio-N": { "mileage": 14, "fuel_type": "petrol", "engine_cc": 1997, "seats": 7 },
+      "XUV700": { "mileage": 15, "fuel_type": "petrol", "engine_cc": 1997, "seats": 7 },
+      "XUV300": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 1197, "seats": 5 },
+      "Thar": { "mileage": 15, "fuel_type": "diesel", "engine_cc": 2184, "seats": 4 },
+      "Bolero": { "mileage": 16, "fuel_type": "diesel", "engine_cc": 2523, "seats": 7 },
+      "BE 6e": { "mileage": 0, "fuel_type": "electric", "range_km": 682, "seats": 5 }
+    },
+    "Renault": {
+      "Kwid": { "mileage": 22, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Kiger": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Triber": { "mileage": 19, "fuel_type": "petrol", "engine_cc": 999, "seats": 7 }
+    },
+    "Ford": {
+      "EcoSport": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 998, "seats": 5 },
+      "Endeavour": { "mileage": 12, "fuel_type": "diesel", "engine_cc": 1996, "seats": 7 }
+    },
+    "Volkswagen": {
+      "Polo": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Vento": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Taigun": { "mileage": 17, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 }
+    },
+    "Skoda": {
+      "Rapid": { "mileage": 16, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Kushaq": { "mileage": 16, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 },
+      "Slavia": { "mileage": 18, "fuel_type": "petrol", "engine_cc": 999, "seats": 5 }
+    }
+  },
+  "trucks": {
+    "Tata Motors": {
+      "Tata Ace Gold": { "mileage": 18, "fuel_type": "diesel", "payload_tons": 0.75, "engine_cc": 699 },
+      "Tata Ace HT": { "mileage": 16, "fuel_type": "diesel", "payload_tons": 1.0, "engine_cc": 699 },
+      "Tata 407": { "mileage": 12, "fuel_type": "diesel", "payload_tons": 2.5, "engine_cc": 3783 },
+      "Tata 709": { "mileage": 10, "fuel_type": "diesel", "payload_tons": 5.0, "engine_cc": 3783 },
+      "Tata 1109": { "mileage": 9, "fuel_type": "diesel", "payload_tons": 6.0, "engine_cc": 5883 },
+      "Tata LPT 1613": { "mileage": 8, "fuel_type": "diesel", "payload_tons": 10.0, "engine_cc": 5883 },
+      "Tata Prima 2523": { "mileage": 6, "fuel_type": "diesel", "payload_tons": 15.0, "engine_cc": 8964 },
+      "Tata Signa 4825": { "mileage": 5, "fuel_type": "diesel", "payload_tons": 25.0, "engine_cc": 8964 }
+    },
+    "Ashok Leyland": {
+      "Dost+": { "mileage": 17, "fuel_type": "diesel", "payload_tons": 1.25, "engine_cc": 1478 },
+      "Partner": { "mileage": 16, "fuel_type": "diesel", "payload_tons": 2.0, "engine_cc": 2495 },
+      "Ecomet 1415": { "mileage": 10, "fuel_type": "diesel", "payload_tons": 8.0, "engine_cc": 5660 },
+      "U-Truck 2516": { "mileage": 7, "fuel_type": "diesel", "payload_tons": 16.0, "engine_cc": 7201 },
+      "Captain 4940": { "mileage": 5, "fuel_type": "diesel", "payload_tons": 28.0, "engine_cc": 11100 }
+    },
+    "Mahindra": {
+      "Jeeto L101": { "mileage": 22, "fuel_type": "diesel", "payload_tons": 0.5, "engine_cc": 909 },
+      "Bolero Pik-Up": { "mileage": 16, "fuel_type": "diesel", "payload_tons": 1.5, "engine_cc": 2523 },
+      "Furio 7": { "mileage": 14, "fuel_type": "diesel", "payload_tons": 3.5, "engine_cc": 3497 },
+      "Blazo X 25": { "mileage": 8, "fuel_type": "diesel", "payload_tons": 15.0, "engine_cc": 7701 }
+    },
+    "Eicher": {
+      "Pro 2059": { "mileage": 16, "fuel_type": "diesel", "payload_tons": 3.0, "engine_cc": 2800 },
+      "Pro 6025": { "mileage": 9, "fuel_type": "diesel", "payload_tons": 15.0, "engine_cc": 5660 },
+      "Pro 8031": { "mileage": 6, "fuel_type": "diesel", "payload_tons": 25.0, "engine_cc": 7796 }
+    },
+    "BharatBenz": {
+      "914R": { "mileage": 12, "fuel_type": "diesel", "payload_tons": 5.5, "engine_cc": 4038 },
+      "1617R": { "mileage": 9, "fuel_type": "diesel", "payload_tons": 10.0, "engine_cc": 5883 },
+      "2523R": { "mileage": 7, "fuel_type": "diesel", "payload_tons": 16.0, "engine_cc": 7201 }
+    }
+  },
+  "tempos": {
+    "Tata Motors": {
+      "Tata Magic Express": { "mileage": 16, "fuel_type": "diesel", "capacity_persons": 8, "engine_cc": 697 },
+      "Tata Winger": { "mileage": 14, "fuel_type": "diesel", "capacity_persons": 13, "engine_cc": 2956 },
+      "Tata Venture": { "mileage": 15, "fuel_type": "diesel", "capacity_persons": 8, "engine_cc": 1405 }
+    },
+    "Mahindra": {
+      "Maxximo Plus": { "mileage": 18, "fuel_type": "diesel", "capacity_persons": 7, "engine_cc": 909 },
+      "Alfa Plus": { "mileage": 20, "fuel_type": "diesel", "payload_tons": 0.5, "engine_cc": 395 },
+      "Supro Profit Truck": { "mileage": 19, "fuel_type": "diesel", "payload_tons": 0.75, "engine_cc": 909 }
+    },
+    "Piaggio": {
+      "Ape City Plus": { "mileage": 35, "fuel_type": "petrol", "payload_tons": 0.25, "engine_cc": 218 },
+      "Ape Auto": { "mileage": 30, "fuel_type": "diesel", "capacity_persons": 7, "engine_cc": 395 },
+      "Porter 700": { "mileage": 25, "fuel_type": "diesel", "payload_tons": 0.7, "engine_cc": 395 },
+      "Ape E-Xtra FX": { "mileage": 0, "fuel_type": "electric", "payload_tons": 0.55, "engine_cc": 0 }
+    },
+    "Force Motors": {
+      "Traveller": { "mileage": 12, "fuel_type": "diesel", "capacity_persons": 17, "engine_cc": 2596 },
+      "Traveller 3350": { "mileage": 11, "fuel_type": "diesel", "capacity_persons": 26, "engine_cc": 2596 },
+      "Gurkha": { "mileage": 14, "fuel_type": "diesel", "capacity_persons": 4, "engine_cc": 2596 }
+    },
+    "Bajaj": {
+      "RE Compact CNG": { "mileage": 0, "fuel_type": "cng", "capacity_persons": 4, "km_per_kg": 35, "engine_cc": 200 },
+      "RE 4S": { "mileage": 35, "fuel_type": "petrol", "capacity_persons": 3, "engine_cc": 175 }
+    },
+    "TVS": {
+      "King Deluxe": { "mileage": 32, "fuel_type": "petrol", "capacity_persons": 3, "engine_cc": 196 },
+      "King Duramax": { "mileage": 28, "fuel_type": "diesel", "payload_tons": 0.35, "engine_cc": 246 }
+    }
+  },
+  "fuel_prices": {
+    "petrol": 102.92,
+    "diesel": 89.62,
+    "cng_per_kg": 76.0,
+    "electric_per_kwh": 8.0
+  },
+  "defaults": {
+    "bike": { "mileage": 45, "fuel_type": "petrol" },
+    "car": { "mileage": 18, "fuel_type": "petrol" },
+    "truck": { "mileage": 8, "fuel_type": "diesel" },
+    "tempo": { "mileage": 20, "fuel_type": "diesel" }
+  }
+}
