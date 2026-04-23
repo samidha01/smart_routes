@@ -1,83 +1,150 @@
+/* ═══════════════════════════════════════════════════
+   NAVBAR — Dark glassmorphism, visually separate
+   ═══════════════════════════════════════════════════ */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  background: rgba(247, 249, 252, 0.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(194, 199, 207, 0.15);
+  z-index: 1000;
+  /* Dark glass — clearly separate from page content */
+  background: rgba(8, 13, 22, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* Visible bottom border = clear visual separation */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.5);
 }
 
 .navbar-inner {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--space-8);
-  height: 64px;
+  padding: 0 1.5rem;
+  height: 58px;
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: 1rem;
 }
 
+/* ── Brand ── */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 0.55rem;
   text-decoration: none;
-  color: var(--color-on-surface);
   flex-shrink: 0;
 }
 
 .navbar-logo {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-  border-radius: var(--radius-md);
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #4a9ef5, #22d472);
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 18px;
+  color: #fff;
+  font-size: 17px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(74, 158, 245, 0.35);
 }
 
 .navbar-title {
-  font-size: var(--font-title-md);
+  font-size: 1rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+  color: #e0e6ed;
+  white-space: nowrap;
 }
 
+/* ── Nav links ── */
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 0.15rem;
   flex: 1;
+  margin-left: 0.5rem;
 }
 
 .navbar-link {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  font-size: var(--font-body-md);
-  font-weight: 500;
-  color: var(--color-on-surface-variant);
+  padding: 0.3rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
   text-decoration: none;
-  transition: all var(--transition-base);
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .navbar-link:hover {
-  background: var(--color-surface-container);
-  color: var(--color-on-surface);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .navbar-link.active {
-  background: var(--color-primary-fixed);
-  color: var(--color-primary);
-  font-weight: 600;
+  background: rgba(74, 158, 245, 0.12);
+  color: #4a9ef5;
 }
 
+/* ── CTA button ── */
 .navbar-cta {
   flex-shrink: 0;
-  font-size: var(--font-label-md) !important;
-  padding: var(--space-2) var(--space-5) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 1rem !important;
+  background: linear-gradient(135deg, #3b5f83, #4a9ef5);
+  color: #fff !important;
+  border-radius: 9px;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  text-decoration: none;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 10px rgba(74, 158, 245, 0.25);
+  border: none;
 }
+.navbar-cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(74, 158, 245, 0.4);
+}
+.navbar-cta .material-icons-round { font-size: 16px; }
+
+/* ── Dashboard compact variant ── */
+/* On the dashboard page the navbar is more compact */
+.navbar-dashboard .navbar-inner { height: 50px; }
+
+/* ── Mobile ── */
+@media (max-width: 700px) {
+  .navbar-links { display: none; }
+  .navbar-inner { padding: 0 1rem; }
+}
+
+/* ── Dashboard status badge ── */
+.navbar-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #22d472;
+  padding: 0.28rem 0.75rem;
+  background: rgba(34, 212, 114, 0.08);
+  border: 1px solid rgba(34, 212, 114, 0.2);
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.navbar-status-dot {
+  width: 7px;
+  height: 7px;
+  background: #22d472;
+  border-radius: 50%;
+  animation: navPulse 1.8s ease infinite;
+  flex-shrink: 0;
+}
+@keyframes navPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+

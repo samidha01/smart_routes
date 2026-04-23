@@ -1,12 +1,11 @@
 /* =============================================
    SmartFlow Route Optimizer - Design System
-   "The Kinetic Path" - Editorial Minimalism
+   Dark Theme / AI Dashboard
    ============================================= */
 
-/* ── Google Fonts ── */
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
 
-/* ── Reset & Base ── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -14,179 +13,104 @@
 }
 
 :root {
-  /* ── Color Tokens ── */
-  --color-background: #f7f9fc;
-  --color-surface: #f7f9fc;
-  --color-surface-container: #eceef1;
-  --color-surface-container-high: #e6e8eb;
-  --color-surface-container-highest: #e0e3e6;
-  --color-surface-container-low: #f2f4f7;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-dim: #d8dadd;
+  /* ── Color Tokens (Dark Theme) ── */
+  --color-background: #080d16;
+  --color-surface: #0d1423;
+  --color-surface-container: rgba(255, 255, 255, 0.03);
+  --color-surface-container-high: rgba(255, 255, 255, 0.06);
+  --color-surface-container-highest: rgba(255, 255, 255, 0.09);
+  --color-surface-container-low: rgba(0, 0, 0, 0.2);
+  --color-surface-dim: #131b2b;
 
-  --color-primary: #3b5f83;
-  --color-primary-container: #54779d;
+  --color-primary: #4a9ef5;
+  --color-primary-container: #3b5f83;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #fdfcff;
+  --color-on-primary-container: #c8dff8;
   --color-primary-fixed: #d0e4ff;
   --color-primary-fixed-dim: #a6caf3;
 
-  --color-secondary: #006d37;
-  --color-secondary-container: #6bfe9c;
-  --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #00743a;
+  --color-secondary: #22d472;
+  --color-secondary-container: rgba(34, 212, 114, 0.2);
+  --color-on-secondary: #000000;
+  --color-on-secondary-container: #6bfe9c;
 
-  --color-tertiary: #904800;
-  --color-tertiary-container: #b55d00;
-  --color-on-tertiary: #ffffff;
-  --color-on-tertiary-fixed: #301400;
+  --color-tertiary: #f5a623;
+  --color-tertiary-container: rgba(245, 166, 35, 0.2);
+  --color-on-tertiary: #000000;
+  --color-on-tertiary-fixed: #ffdb99;
 
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --color-error: #ff4f6d;
+  --color-error-container: rgba(255, 79, 109, 0.2);
   --color-on-error: #ffffff;
 
-  --color-on-background: #191c1e;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #42474e;
-  --color-outline: #73777f;
-  --color-outline-variant: #c2c7cf;
-
-  /* ── Spacing ── */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-
-  /* ── Border Radius ── */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-full: 9999px;
+  --color-on-background: #f0f4f8;
+  --color-on-surface: #e0e6ed;
+  --color-on-surface-variant: #8b9bb4;
+  --color-outline: #4a5c73;
+  --color-outline-variant: #2d3b4e;
 
   /* ── Typography ── */
   --font-family: 'Manrope', sans-serif;
-  --font-display-lg: 3.5rem;
-  --font-display-md: 2.75rem;
-  --font-display-sm: 2.25rem;
-  --font-headline-lg: 2rem;
-  --font-headline-md: 1.75rem;
-  --font-headline-sm: 1.5rem;
-  --font-title-lg: 1.375rem;
-  --font-title-md: 1.125rem;
-  --font-title-sm: 1rem;
-  --font-body-lg: 1rem;
-  --font-body-md: 0.875rem;
-  --font-body-sm: 0.75rem;
-  --font-label-lg: 0.875rem;
-  --font-label-md: 0.75rem;
-  --font-label-sm: 0.6875rem;
-
-  /* ── Shadows ── */
-  --shadow-ambient: 0px 20px 40px rgba(25, 28, 30, 0.06);
-  --shadow-float: 0px 32px 64px rgba(25, 28, 30, 0.08);
-
-  /* ── Transitions ── */
-  --transition-base: 200ms cubic-bezier(0.2, 0, 0, 1);
-  --transition-enter: 300ms cubic-bezier(0.05, 0.7, 0.1, 1);
 }
 
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
+  background-color: var(--color-background);
 }
 
 body {
   font-family: var(--font-family);
   background-color: var(--color-background);
   color: var(--color-on-background);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Scrollbar ── */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
-::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-outline); }
 
-/* ── Utility Classes ── */
-.container { max-width: 1280px; margin: 0 auto; padding: 0 var(--space-8); }
-
-/* Chip styles */
-.chip {
+/* Material Icons Vertical alignment fix */
+.material-icons-round {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-label-md);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.chip-best { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
-.chip-alert { background: var(--color-tertiary-container); color: var(--color-on-tertiary-fixed); }
-.chip-error { background: var(--color-error-container); color: var(--color-error); }
-
-/* Button styles */
-.btn {
-  display: inline-flex;
+  vertical-align: middle;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-full);
-  font-family: var(--font-family);
-  font-size: var(--font-label-lg);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all var(--transition-base);
-  text-decoration: none;
 }
-.btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
-  color: var(--color-on-primary);
-}
-.btn-primary:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(59, 95, 131, 0.3);
-}
-.btn-secondary {
-  background: var(--color-surface-container-high);
-  color: var(--color-on-surface);
-}
-.btn-secondary:hover { background: var(--color-surface-container-highest); }
 
-/* Pulse animation for active routes */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+/* Shared Utilities */
+.fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes countUp {
-  from { opacity: 0; transform: scale(0.8); }
-  to   { opacity: 1; transform: scale(1); }
-}
 
-.fade-in-up { animation: fadeInUp var(--transition-enter) both; }
-.slide-in-right { animation: slideInRight var(--transition-enter) both; }
+/* Button */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.5rem 1.25rem; border-radius: 8px; font-family: var(--font-family);
+  font-size: 0.88rem; font-weight: 700; cursor: pointer; text-decoration: none;
+  border: none; transition: all 0.2s;
+}
+.btn-primary { background: var(--color-primary); color: #fff; }
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,158,245,0.3); }
+
+/* Leaflet Overrides for Dark Theme */
+.leaflet-container { font-family: var(--font-family); background: #080d16; }
+.leaflet-tooltip {
+  background: rgba(13, 20, 35, 0.9) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 0.4rem 0.6rem !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+  font-size: 0.72rem !important;
+}
+.leaflet-tooltip::before { border-top-color: rgba(13, 20, 35, 0.9) !important; }
