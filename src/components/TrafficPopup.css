@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════
+   TRAFFIC POPUP — non-blocking top overlay
+   ═══════════════════════════════════════════ */
+
+.tp-popup {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 700;
+  width: min(480px, calc(100% - 32px));
+  border-radius: 14px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  font-family: var(--font-family, 'Inter', sans-serif);
+  overflow: hidden;
+  animation: tpSlideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: all;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes tpSlideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-18px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Colour themes */
+.tp-popup-high {
+  background: rgba(255, 60, 80, 0.12);
+  border: 1.5px solid rgba(255, 60, 80, 0.35);
+}
+.tp-popup-medium {
+  background: rgba(245, 166, 35, 0.1);
+  border: 1.5px solid rgba(245, 166, 35, 0.3);
+}
+
+/* ── Top row ── */
+.tp-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 14px 10px;
+}
+
+.tp-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.tp-popup-high   .tp-icon { color: #ff3c50; }
+.tp-popup-medium .tp-icon { color: #f5a623; }
+
+.tp-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tp-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.tp-meta {
+  font-size: 0.69rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+}
+.tp-meta strong {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 600;
+}
+
+.tp-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.tp-close:hover { color: rgba(255, 255, 255, 0.7); }
+.tp-close .material-icons-round { font-size: 16px; }
+
+/* ── Action buttons ── */
+.tp-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 14px 13px;
+}
+
+.tp-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.16s;
+}
+.tp-btn .material-icons-round { font-size: 14px; }
+
+.tp-btn-switch {
+  background: rgba(34, 212, 114, 0.13);
+  border: 1.5px solid rgba(34, 212, 114, 0.35);
+  color: #22d472;
+}
+.tp-btn-switch:hover {
+  background: rgba(34, 212, 114, 0.22);
+  border-color: rgba(34, 212, 114, 0.6);
+  transform: translateY(-1px);
+}
+
+.tp-btn-continue {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+.tp-btn-continue:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Auto-dismiss timer bar ── */
+.tp-timer-bar {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.4), transparent);
+  animation: tpTimer 9s linear forwards;
+  transform-origin: left;
+}
+
+@keyframes tpTimer {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}

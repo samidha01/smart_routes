@@ -36,7 +36,7 @@ export async function optimizeRoute(params) {
     fuel_type:      params.fuel_type || null,
     priority_stops: params.priority_stops || [],
     mode:           params.mode || 'fastest',
-    top_k:          50,
+    top_k:          params.top_k || 50,
     source_lat:     params.source_lat,
     source_lon:     params.source_lon,
     dest_lat:       params.dest_lat,

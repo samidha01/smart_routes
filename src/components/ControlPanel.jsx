@@ -14,8 +14,8 @@ async function reverseGeocode(lat, lon) {
     const a = data.address || {}
     const name =
       a.suburb || a.neighbourhood || a.quarter ||
-      a.town   || a.city_district  || a.village ||
-      a.city   || a.county         || data.display_name?.split(',')[0] ||
+      a.town || a.city_district || a.village ||
+      a.city || a.county || data.display_name?.split(',')[0] ||
       'My Location'
     return { name, lat: parseFloat(data.lat), lon: parseFloat(data.lon) }
   } catch (_) {
@@ -24,10 +24,10 @@ async function reverseGeocode(lat, lon) {
 }
 
 const VEHICLE_TYPES = ['car', 'bike', 'truck', 'tempo']
-const FUEL_TYPES    = ['petrol', 'diesel', 'electric', 'cng', 'hybrid']
+const FUEL_TYPES = ['petrol', 'diesel', 'electric', 'cng', 'hybrid']
 const MODES = [
-  { value: 'fastest', label: 'Fastest', icon: 'bolt',  desc: 'Minimize travel time' },
-  { value: 'eco',     label: 'Eco',     icon: 'eco',   desc: 'Minimize fuel usage'  },
+  { value: 'fastest', label: 'Fastest', icon: 'bolt', desc: 'Minimize travel time' },
+  { value: 'eco', label: 'Eco', icon: 'eco', desc: 'Minimize fuel usage' },
 ]
 const VTYPE_ICONS = {
   car: 'directions_car', bike: 'two_wheeler', truck: 'local_shipping', tempo: 'airport_shuttle',
@@ -38,7 +38,7 @@ const MAX_STOPS = 5
 
 function GeoInput({ id, label, icon, value, onChange, onSelectLocation, error, placeholder, gpsState, onGpsClick }) {
   const [suggestions, setSuggestions] = useState([])
-  const [loading,     setLoading]     = useState(false)
+  const [loading, setLoading] = useState(false)
   const debounceRef = useRef(null)
 
   useEffect(() => {
@@ -95,8 +95,8 @@ function GeoInput({ id, label, icon, value, onChange, onSelectLocation, error, p
             <span>
               {gpsState === 'loading' ? 'Locating…'
                 : gpsState === 'success' ? 'Located ✓'
-                : gpsState === 'error'   ? 'GPS Failed'
-                : 'My Location'}
+                  : gpsState === 'error' ? 'GPS Failed'
+                    : 'My Location'}
             </span>
           </button>
         )}
@@ -144,7 +144,7 @@ export default function ControlPanel({ onSubmit, loading }) {
   const [form, setForm] = useState({
     source: '', destination: '',
     source_lat: null, source_lon: null,
-    dest_lat:   null, dest_lon:   null,
+    dest_lat: null, dest_lon: null,
     vehicle_type: 'car', vehicle_brand: '',
     vehicle_model: '', mileage: '', fuel_type: 'petrol', mode: 'fastest',
   })
@@ -159,7 +159,7 @@ export default function ControlPanel({ onSubmit, loading }) {
   const [errors,           setErrors]           = useState({})
   const [gpsState,         setGpsState]         = useState('idle')   // idle | loading | success | error
   const stopDebounceRef = useRef(null)
-  const gpsResetTimer   = useRef(null)
+  const gpsResetTimer = useRef(null)
 
   function set(key, val) {
     setForm(f => ({ ...f, [key]: val }))
@@ -182,7 +182,7 @@ export default function ControlPanel({ onSubmit, loading }) {
         const { name } = await reverseGeocode(latitude, longitude)
         setForm(f => ({
           ...f,
-          source:     name,
+          source: name,
           source_lat: latitude,
           source_lon: longitude,
         }))
@@ -225,7 +225,7 @@ export default function ControlPanel({ onSubmit, loading }) {
     fetchVehiclesByType(form.vehicle_type).then(data => {
       const md = data?.[form.vehicle_brand]?.[form.vehicle_model]
       if (md) setForm(f => ({ ...f, mileage: md.mileage ?? f.mileage, fuel_type: md.fuel_type ?? f.fuel_type }))
-    }).catch(() => {})
+    }).catch(() => { })
   }, [form.vehicle_model])
 
   // Priority stop autocomplete
@@ -239,7 +239,7 @@ export default function ControlPanel({ onSubmit, loading }) {
       try {
         const res = await fetchAutocomplete(stopInput)
         if (active) setStopSuggestions(res.results || [])
-      } catch (_) {}
+      } catch (_) { }
       finally { if (active) setStopLoading(false) }
     }, 450)
 
@@ -279,7 +279,7 @@ export default function ControlPanel({ onSubmit, loading }) {
 
   function validate() {
     const e = {}
-    if (!form.source)      e.source      = 'Required'
+    if (!form.source) e.source = 'Required'
     if (!form.destination) e.destination = 'Required'
     if (form.source && form.destination && form.source.toLowerCase() === form.destination.toLowerCase())
       e.destination = 'Must differ from source'
@@ -325,7 +325,7 @@ export default function ControlPanel({ onSubmit, loading }) {
           }}
           onSelectLocation={item => setForm(f => ({
             ...f,
-            source:     item.short_name || item.name?.split(',')[0] || item.name,
+            source: item.short_name || item.name?.split(',')[0] || item.name,
             source_lat: item.lat,
             source_lon: item.lon,
           }))}
@@ -357,8 +357,8 @@ export default function ControlPanel({ onSubmit, loading }) {
           onSelectLocation={item => setForm(f => ({
             ...f,
             destination: item.short_name || item.name?.split(',')[0] || item.name,
-            dest_lat:    item.lat,
-            dest_lon:    item.lon,
+            dest_lat: item.lat,
+            dest_lon: item.lon,
           }))}
           error={errors.destination}
         />
@@ -498,11 +498,10 @@ export default function ControlPanel({ onSubmit, loading }) {
       <div className="cp-section">
         <p className="cp-section-label">
           Fuel Level
-          <span className={`cp-fuel-badge ${
-            fuelLevel <= 20 ? 'cp-fuel-badge-red'
-            : fuelLevel <= 45 ? 'cp-fuel-badge-yellow'
-            : 'cp-fuel-badge-green'
-          }`}>{fuelLevel}%</span>
+          <span className={`cp-fuel-badge ${fuelLevel <= 20 ? 'cp-fuel-badge-red'
+              : fuelLevel <= 45 ? 'cp-fuel-badge-yellow'
+                : 'cp-fuel-badge-green'
+            }`}>{fuelLevel}%</span>
         </p>
         <div className="cp-fuel-slider-wrap">
           <input
@@ -513,11 +512,10 @@ export default function ControlPanel({ onSubmit, loading }) {
             step="5"
             value={fuelLevel}
             onChange={e => setFuelLevel(Number(e.target.value))}
-            className={`cp-fuel-slider ${
-              fuelLevel <= 20 ? 'cp-fuel-slider-red'
-              : fuelLevel <= 45 ? 'cp-fuel-slider-yellow'
-              : 'cp-fuel-slider-green'
-            }`}
+            className={`cp-fuel-slider ${fuelLevel <= 20 ? 'cp-fuel-slider-red'
+                : fuelLevel <= 45 ? 'cp-fuel-slider-yellow'
+                  : 'cp-fuel-slider-green'
+              }`}
           />
           <div className="cp-fuel-track-labels">
             <span>Empty</span>
@@ -527,9 +525,8 @@ export default function ControlPanel({ onSubmit, loading }) {
           </div>
           <div className="cp-fuel-bar">
             <div
-              className={`cp-fuel-bar-fill ${
-                fuelLevel <= 20 ? 'red' : fuelLevel <= 45 ? 'yellow' : 'green'
-              }`}
+              className={`cp-fuel-bar-fill ${fuelLevel <= 20 ? 'red' : fuelLevel <= 45 ? 'yellow' : 'green'
+                }`}
               style={{ width: `${fuelLevel}%` }}
             />
           </div>

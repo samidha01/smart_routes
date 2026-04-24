@@ -10,7 +10,7 @@ data = json.dumps({
     "dest_lon": 73.327,
     "vehicle_type": "car",
     "mode": "fastest",
-    "top_k": 50
+    "top_k": 4
 }).encode("utf-8")
 
 req = urllib.request.Request(

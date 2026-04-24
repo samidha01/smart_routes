@@ -1,0 +1,184 @@
+/* ════════════════════════════════════════════════════
+   NAVIGATION HUD — Google Maps-style overlay
+   ════════════════════════════════════════════════════ */
+
+.nav-hud {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(6, 11, 20, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-family, 'Inter', sans-serif);
+  animation: hudSlideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  user-select: none;
+}
+
+@keyframes hudSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* ── Top row: icon + instruction + speed ── */
+.nav-hud-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  border-left: 4px solid var(--hud-accent, #4a9ef5);
+  transition: border-color 0.35s;
+}
+
+.nav-hud-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  border: 1.5px solid transparent;
+  flex-shrink: 0;
+  transition: background 0.3s, border-color 0.3s;
+}
+.nav-hud-icon-wrap .material-icons-round {
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.nav-hud-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-hud-action {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.nav-hud-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.2;
+}
+
+/* Speed box */
+.nav-hud-speedbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  padding: 6px 10px;
+  flex-shrink: 0;
+  min-width: 52px;
+}
+.nav-hud-speed-val {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+}
+.nav-hud-speed-unit {
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+/* ── Progress bar ── */
+.nav-hud-progress-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.nav-hud-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.2s linear, background 0.35s;
+}
+
+/* ── Bottom row: stats + label + end button ── */
+.nav-hud-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 13px;
+}
+
+.nav-hud-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.nav-hud-stat-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+.nav-hud-stat-lbl {
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.nav-hud-divider {
+  width: 1px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.nav-hud-route-label {
+  flex: 1;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.28);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-hud-end-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  background: rgba(255, 79, 109, 0.12);
+  border: 1.5px solid rgba(255, 79, 109, 0.3);
+  border-radius: 11px;
+  color: #ff4f6d;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+  flex-shrink: 0;
+}
+.nav-hud-end-btn:hover {
+  background: rgba(255, 79, 109, 0.22);
+  border-color: rgba(255, 79, 109, 0.55);
+  transform: translateY(-1px);
+}
+.nav-hud-end-btn .material-icons-round { font-size: 14px; }
+
+/* ── Arrived state ── */
+.nav-hud-arrived .nav-hud-top {
+  border-left-color: #22d472;
+  background: rgba(34, 212, 114, 0.06);
+}
+.nav-hud-arrived .nav-hud-action {
+  color: #22d472;
+}

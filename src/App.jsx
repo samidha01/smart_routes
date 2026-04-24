@@ -15,7 +15,7 @@ function AppLayout() {
     <>
       <Navbar compact={isDashboard} />
       <Routes>
-        <Route path="/"          element={<LandingPage />} />
+      <Route path="/"          element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/about"     element={<About />} />

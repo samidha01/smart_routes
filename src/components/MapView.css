@@ -44,6 +44,18 @@
   flex-shrink: 0;
   display: block;
 }
+.legend-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 0.15rem 0;
+}
+.legend-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
 
 .map-live-badge {
   position: absolute;
@@ -103,7 +115,7 @@
   color: rgba(255,255,255,0.75);
 }
 
-/* Reroute toast */
+/* Reroute toast — sits above legend, shifts up during navigation */
 .map-reroute-toast {
   position: absolute;
   bottom: 20px;

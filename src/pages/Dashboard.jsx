@@ -3,32 +3,92 @@ import ControlPanel from '../components/ControlPanel'
 import MapView from '../components/MapView'
 import RouteList from '../components/RouteList'
 import StatsPanel from '../components/StatsPanel'
+import TrafficPopup, { analyseTraffic } from '../components/TrafficPopup'
+import TimeSlider from '../components/TimeSlider'
 import { optimizeRoute, openRerouteSocket } from '../services/api'
 import { useGeolocation } from '../hooks/useGeolocation'
+import { getCurrentHour, getTimePeriod, applyTrafficPenalty } from '../services/trafficPenalty'
 import './Dashboard.css'
 
 export default function Dashboard() {
-  const [result,        setResult]        = useState(null)
-  const [loading,       setLoading]       = useState(false)
-  const [error,         setError]         = useState(null)
-  const [selectedRank,  setSelectedRank]  = useState(1)
-  const [wsStatus,      setWsStatus]      = useState('idle')   // idle | connected | monitoring
-  const [rerouteEvent,  setRerouteEvent]  = useState(null)
-  const [toast,         setToast]         = useState(null)
-  const [activeTab,     setActiveTab]     = useState('routes') // routes | stats (mobile)
-  const [isNavigating,  setIsNavigating]  = useState(false)
-  const [fuelStations,  setFuelStations]  = useState([])       // [{lat,lon,name}]
-  const [fuelCritical,  setFuelCritical]  = useState(false)
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [selectedRank, setSelectedRank] = useState(1)
+  const [wsStatus, setWsStatus] = useState('idle')   // idle | connected | monitoring
+  const [rerouteEvent, setRerouteEvent] = useState(null)
+  const [toast, setToast] = useState(null)
+  const [activeTab, setActiveTab] = useState('routes') // routes | stats (mobile)
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [fuelStations, setFuelStations] = useState([])       // [{lat,lon,name}]
+  const [fuelCritical, setFuelCritical] = useState(false)
+  const [sourceIsGPS, setSourceIsGPS] = useState(false)    // true when My Location was used
+  const [trafficAlert, setTrafficAlert] = useState(null)   // Holds the current traffic alert to show in popup
+  // ── Time Machine (Departure Time Slider) ──────────────────────────────────
+  const [departureHour, setDepartureHour] = useState(() => getCurrentHour())
   const wsRef = useRef(null)
   const rerouteTimer = useRef(null)
 
+  // ── Time-adjusted (re-ranked) result ─────────────────────────────────────
+  // Flatten all routes into one list, apply penalty, re-rank purely on frontend.
+  // No API call, no page reload.
+  const timeAdjustedResult = useMemo(() => {
+    if (!result) return null
+
+    // Build a flat list of all routes with full data
+    const richByRank = new Map()
+    richByRank.set(1, { rank: 1, ...result.best_route })
+    ;(result.alternative_routes || []).forEach((r, i) => {
+      richByRank.set(i + 2, { rank: i + 2, ...r })
+    })
+
+    const summary = result.all_routes_summary || []
+    let allRoutes = []
+    if (summary.length > 0) {
+      allRoutes = summary.map(s => {
+        const rank = s.rank ?? (summary.indexOf(s) + 1)
+        return richByRank.has(rank) ? { ...s, rank, ...richByRank.get(rank) } : { ...s, rank }
+      })
+    } else {
+      allRoutes = [...richByRank.values()]
+    }
+
+    const periodId = getTimePeriod(departureHour)
+    // Only re-rank if not AFTERNOON (baseline) — otherwise keep original order
+    const penalized = applyTrafficPenalty(allRoutes, periodId)
+
+    // Build a new result shaped like the original but with penalized ranks
+    const newBest   = penalized[0] || null
+    const newAlts   = penalized.slice(1, 4)
+    const newSummary = penalized.map(r => ({
+      rank:               r.rank,
+      composite_score:    r.time_adjusted_score ?? r.composite_score,
+      distance_km:        r.distance_km,
+      estimated_time_min: r.estimated_time_min,
+      fuel_estimate:      r.fuel_estimate,
+      path_geometry:      r.path_geometry ?? r.path ?? [],
+      segments:           r.segments ?? [],
+      traffic_road_type:  r.traffic_road_type,
+      traffic_penalty_applied: r.traffic_penalty_applied,
+    }))
+
+    return {
+      ...result,
+      best_route:         newBest ? { ...newBest, rank: 1 } : result.best_route,
+      alternative_routes: newAlts.map((r, i) => ({ ...r, rank: i + 2 })),
+      all_routes_summary: newSummary,
+      _time_period:       periodId,
+      _departure_hour:    departureHour,
+    }
+  }, [result, departureHour])
+
   const activeRoute = useMemo(() => {
-    if (!result) return null;
-    if (selectedRank === 1) return result.best_route;
-    const alt = (result.alternative_routes || []).find(r => (r.rank || result.alternative_routes.indexOf(r) + 2) === selectedRank);
+    if (!timeAdjustedResult) return null;
+    if (selectedRank === 1) return timeAdjustedResult.best_route;
+    const alt = (timeAdjustedResult.alternative_routes || []).find(r => (r.rank || timeAdjustedResult.alternative_routes.indexOf(r) + 2) === selectedRank);
     if (alt) return alt;
-    return (result.all_routes_summary || []).find(r => r.rank === selectedRank) || null;
-  }, [result, selectedRank]);
+    return (timeAdjustedResult.all_routes_summary || []).find(r => r.rank === selectedRank) || null;
+  }, [timeAdjustedResult, selectedRank]);
 
   const { location } = useGeolocation(isNavigating, activeRoute);
 
@@ -43,8 +103,8 @@ export default function Dashboard() {
     if (wsRef.current) wsRef.current.close()
     setWsStatus('connected')
     const handle = openRerouteSocket(sessionId, (data) => {
-      if (data.event === 'connected')   setWsStatus('monitoring')
-      if (data.event === 'heartbeat')   setWsStatus('monitoring')
+      if (data.event === 'connected') setWsStatus('monitoring')
+      if (data.event === 'heartbeat') setWsStatus('monitoring')
       if (data.event === 'reroute_update') {
         setRerouteEvent(data)
         showToast(`Better route found! Score: ${data.new_score?.toFixed(3)}`, 'success')
@@ -100,14 +160,14 @@ export default function Dashboard() {
       if (data.session_id) connectWS(data.session_id)
 
       // Show fuel stations at yellow (≤45%) OR red (≤20%) — early warning
-      const fuelLvl  = formData.fuel_level ?? 75
-      const mileage  = parseFloat(formData.mileage) || 15
-      const TANK_L   = 45
-      const fuelL    = (fuelLvl / 100) * TANK_L
-      const rangeKm  = fuelL * mileage
-      const distKm   = data.best_route?.distance_km ?? 0
+      const fuelLvl = formData.fuel_level ?? 75
+      const mileage = parseFloat(formData.mileage) || 15
+      const TANK_L = 45
+      const fuelL = (fuelLvl / 100) * TANK_L
+      const rangeKm = fuelL * mileage
+      const distKm = data.best_route?.distance_km ?? 0
       const mathCrit = rangeKm < distKm * 1.10   // mathematically can't make it
-      const lowFuel  = fuelLvl <= 45             // yellow or red slider state
+      const lowFuel = fuelLvl <= 45             // yellow or red slider state
       const needStations = mathCrit || lowFuel
 
       setFuelCritical(needStations)
@@ -142,27 +202,51 @@ export default function Dashboard() {
   }, [handleGenerate])
 
   // ── Review Route (zoom to fit, no navigation) ─────────────────────────────
-  const handleReviewRoute = useCallback((rank) => {
+  const handleSelectRoute = useCallback((rank) => {
     setSelectedRank(rank)
     setIsNavigating(false)
+    
+    // Traffic popup check (use time-adjusted result)
+    if (timeAdjustedResult) {
+      const allRoutes = [
+        { rank: 1, ...timeAdjustedResult.best_route },
+        ...(timeAdjustedResult.alternative_routes || []).map((r, i) => ({ rank: i + 2, ...r })),
+        ...(timeAdjustedResult.all_routes_summary || [])
+      ]
+      const selected = allRoutes.find(r => r.rank === rank)
+      if (selected) {
+        setTrafficAlert(analyseTraffic(selected))
+      }
+    }
+  }, [timeAdjustedResult])
+
+  const handleReviewRoute = useCallback((rank) => {
+    handleSelectRoute(rank)
     // MapView auto-zooms to the selected route bounds via its selectedRank effect
-  }, [])
+  }, [handleSelectRoute])
 
   const canNavigate = useMemo(() => {
-    if (!location || location.isSimulated || !result) return false;
-    if (result.best_route && result.best_route.path_geometry && result.best_route.path_geometry.length > 0) {
-      const srcCoord = result.best_route.path_geometry[0];
+    if (!location || location.isSimulated || !timeAdjustedResult) return false;
+    const bestRoute = timeAdjustedResult.best_route;
+    if (bestRoute && bestRoute.path_geometry && bestRoute.path_geometry.length > 0) {
+      const srcCoord = bestRoute.path_geometry[0];
       const dx = location.longitude - srcCoord[0];
       const dy = location.latitude - srcCoord[1];
-      const dist = Math.sqrt(dx*dx + dy*dy) * 111; // Approx km
+      const dist = Math.sqrt(dx * dx + dy * dy) * 111; // Approx km
       return dist < 2.0; // Within 2km of source
     }
     return false;
-  }, [location, result]);
+  }, [location, timeAdjustedResult]);
 
   function handleRecalculate() {
     if (lastFormRef.current) handleGenerate(lastFormRef.current)
   }
+
+  // ── Departure hour change handler ─────────────────────────────────────────
+  const handleDepartureHourChange = useCallback((newHour) => {
+    setDepartureHour(newHour)
+    setSelectedRank(1)  // Reset to best route when time changes
+  }, [])
 
   return (
     <div className="dashboard-page">
@@ -202,9 +286,9 @@ export default function Dashboard() {
               {result ? (
                 <span>
                   <strong>{result.routes_evaluated}</strong> routes ·{' '}
-                  <strong>{result.source?.replace(/_/g,' ')}</strong>
+                  <strong>{result.source?.replace(/_/g, ' ')}</strong>
                   {' → '}
-                  <strong>{result.destination?.replace(/_/g,' ')}</strong>
+                  <strong>{result.destination?.replace(/_/g, ' ')}</strong>
                 </span>
               ) : (
                 <span className="db-action-idle">No routes generated yet</span>
@@ -222,14 +306,22 @@ export default function Dashboard() {
 
           <div className="db-map-wrap">
             <MapView
-              result={result}
+              result={timeAdjustedResult}
               selectedRank={selectedRank}
               onSelectRoute={(rank) => { setSelectedRank(rank); setIsNavigating(false); }}
               rerouteEvent={rerouteEvent}
               isNavigating={isNavigating}
+              onEndNavigation={() => { setIsNavigating(false); }}
               userLocation={location}
               fuelStations={fuelStations}
               fuelCritical={fuelCritical}
+            />
+
+            {/* ── Time Machine Slider — appears over map after routes load ── */}
+            <TimeSlider
+              visible={!!result && !loading}
+              hour={departureHour}
+              onChange={handleDepartureHourChange}
             />
 
             {/* Loading overlay */}
@@ -271,16 +363,17 @@ export default function Dashboard() {
           <div className="db-right-content">
             {activeTab === 'routes' ? (
               <RouteList
-                result={result}
+                result={timeAdjustedResult}
                 selectedRank={selectedRank}
-                onSelectRoute={(rank) => { setSelectedRank(rank); setIsNavigating(false); }}
-                onNavigateRoute={(rank) => { setSelectedRank(rank); setIsNavigating(true); }}
+                onSelectRoute={handleSelectRoute}
+                onNavigateRoute={(rank) => { handleSelectRoute(rank); setIsNavigating(true); }}
                 onReviewRoute={handleReviewRoute}
                 canNavigate={canNavigate}
+                departureHour={departureHour}
               />
             ) : (
               <StatsPanel
-                result={result}
+                result={timeAdjustedResult}
                 selectedRank={selectedRank}
                 wsStatus={wsStatus}
               />

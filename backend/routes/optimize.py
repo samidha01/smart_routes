@@ -69,7 +69,7 @@ class OptimizeRouteRequest(BaseModel):
     optimize_stops: bool  = Field(False, description="Perform TSP reordering on priority_stops")
     priority_stops: Optional[List[PriorityStopObj]] = Field(default_factory=list, description="Must-visit locations (max 5)")
     mode:           str   = Field("fastest", description="fastest | eco")
-    top_k:          int   = Field(50, ge=1, le=100)
+    top_k:          int   = Field(50, ge=1, le=50)
     # Pre-resolved coordinates (set by frontend after geocoding)
     source_lat:     Optional[float] = Field(None)
     source_lon:     Optional[float] = Field(None)

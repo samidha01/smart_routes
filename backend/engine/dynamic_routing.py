@@ -23,13 +23,12 @@ import time
 from typing import List, Dict, Tuple, Optional
 
 import httpx
-from cachetools import TTLCache
 
 logger = logging.getLogger("dynamic_routing")
 
 # ── Cache ─────────────────────────────────────────────────────────────────────
+_ROUTE_CACHE: Dict[str, tuple] = {}
 CACHE_TTL = 300  # 5 minutes
-_ROUTE_CACHE = TTLCache(maxsize=500, ttl=CACHE_TTL)
 
 OSRM_BASE = "https://router.project-osrm.org/route/v1/driving"
 OSRM_TRIP = "http://router.project-osrm.org/trip/v1/driving"
@@ -38,7 +37,7 @@ OSRM_TRIP = "http://router.project-osrm.org/trip/v1/driving"
 OSRM_BATCH_SIZE  = 4     # parallel requests per batch
 OSRM_BATCH_DELAY = 0.4   # seconds between batches
 OSRM_TIMEOUT     = 18.0  # per-request timeout (seconds)
-OSRM_MAX_VIA_PTS = 12    # via-point variations → ~13 total OSRM calls
+OSRM_MAX_VIA_PTS = 25    # via-point variations → ~26 total OSRM calls
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -55,49 +54,53 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 def _build_osrm_url(waypoints: List[Tuple[float, float]]) -> str:
     """Build OSRM URL from (lat, lon) tuples. Requests full geometry + up to 3 alternatives."""
     coords = ";".join(f"{lon},{lat}" for lat, lon in waypoints)
-    return f"{OSRM_BASE}/{coords}?alternatives=3&overview=full&geometries=geojson"
+    # overview=full  → every road point in the geometry (not simplified)
+    # geometries=geojson → [lon, lat] arrays we can render directly
+    # alternatives=3  → up to 3 alternative routes per call
+    # steps=false     → skip turn-by-turn
+    # continue_straight=true → natural driving behavior at via-points
+    return f"{OSRM_BASE}/{coords}?alternatives=3&overview=full&geometries=geojson&steps=false&continue_straight=true"
 
 
 def _generate_perturbation_waypoints(
     slat: float, slon: float, dlat: float, dlon: float, num: int = 12
 ) -> List[Tuple[float, float]]:
     """
-    Generate diverse via-points to push OSRM through different road corridors.
-    Uses large perpendicular offsets and multiple along-route fractions so that
-    each call is very likely to follow a different road.
+    Generate via-points that push OSRM through DIFFERENT road corridors.
+
+    STRATEGY: Pick real landmarks/junctions from the CITY_NODES 'logical graph'
+    that are geographically between the source and destination. This ensures
+    via-points are always valid road-snapped locations and follow 'logical' paths.
     """
-    mid_lat = (slat + dlat) / 2
-    mid_lon = (slon + dlon) / 2
+    # 1. Bounding box with some padding
+    min_lat, max_lat = sorted([slat, dlat])
+    min_lon, max_lon = sorted([slon, dlon])
+    pad_lat = (max_lat - min_lat) * 0.2 + 0.01
+    pad_lon = (max_lon - min_lon) * 0.2 + 0.01
 
-    dx = dlon - slon
-    dy = dlat - slat
-    length = math.sqrt(dx * dx + dy * dy) or 1e-9
+    # 2. Find nodes inside the box
+    candidates = []
+    for node, attrs in CITY_NODES.items():
+        n_lat, n_lon = attrs["lat"], attrs["lon"]
+        if (min_lat - pad_lat <= n_lat <= max_lat + pad_lat and
+            min_lon - pad_lon <= n_lon <= max_lon + pad_lon):
+            candidates.append((n_lat, n_lon))
 
-    # Unit vectors
-    px = -dy / length   # perpendicular
-    py = dx / length
-    ax = dx / length    # along-axis
-    ay = dy / length
+    # 3. If too few nodes (e.g. short route), pick K nearest nodes to midpoint
+    if len(candidates) < num:
+        mid_lat, mid_lon = (slat + dlat) / 2, (slon + dlon) / 2
+        all_nodes = []
+        for attrs in CITY_NODES.values():
+            dist = (attrs["lat"] - mid_lat)**2 + (attrs["lon"] - mid_lon)**2
+            all_nodes.append((dist, (attrs["lat"], attrs["lon"])))
+        all_nodes.sort()
+        candidates = [n for _, n in all_nodes[:num*2]]
 
-    dist_deg = math.sqrt(dx * dx + dy * dy)
-
-    waypoints: List[Tuple[float, float]] = []
-
-    # 1. Large perpendicular offsets at midpoint (force different corridors)
-    for s in [-0.8, -0.5, -0.25, 0.25, 0.5, 0.8]:
-        waypoints.append((
-            mid_lat + py * s * dist_deg,
-            mid_lon + px * s * dist_deg,
-        ))
-
-    # 2. Along-axis fractions (1/4, 1/3, 1/2, 2/3, 3/4) with perpendicular nudges
-    for frac in [0.25, 0.40, 0.60, 0.75]:
-        for perp in [-0.35, 0.35]:
-            wlat = slat + ay * frac * dist_deg + py * perp * dist_deg
-            wlon = slon + ax * frac * dist_deg + px * perp * dist_deg
-            waypoints.append((wlat, wlon))
-
-    return waypoints[:num]
+    # 4. Return unique diverse selection
+    import random
+    if len(candidates) > num:
+        return random.sample(candidates, num)
+    return candidates[:num]
 
 
 # ── OSRM Fetching ─────────────────────────────────────────────────────────────
@@ -187,132 +190,10 @@ def deduplicate_routes(routes: List[Dict], threshold: float = 0.72) -> List[Dict
     return unique
 
 
-# ── Synthetic Route Padding ───────────────────────────────────────────────────
-# When OSRM gives fewer than 50 unique routes we generate synthetic variants
-# by geometrically blending/interpolating existing real routes.
-# No extra API calls. Endpoints always pinned to exact source/dest.
+# ── Synthetic Route Padding (REMOVED) ──────────────────────────────────────────
+# Removed to ensure all routes strictly follow real roads.
+# No synthetic geometry interpolation allowed.
 
-def _resample_path(path: List, target_n: int) -> List:
-    """Linearly resample `path` to exactly `target_n` points."""
-    if len(path) < 2 or target_n < 2:
-        return list(path)
-    result = []
-    step = (len(path) - 1) / (target_n - 1)
-    for i in range(target_n):
-        idx = i * step
-        lo = int(idx)
-        hi = min(lo + 1, len(path) - 1)
-        frac = idx - lo
-        p0, p1 = path[lo], path[hi]
-        result.append([p0[0] + (p1[0] - p0[0]) * frac,
-                       p0[1] + (p1[1] - p0[1]) * frac])
-    return result
-
-
-def _blend_paths(path_a: List, path_b: List, alpha: float) -> List:
-    """
-    Blend two paths: resample to same length, interpolate by alpha.
-    alpha=0 → pure path_a, alpha=1 → pure path_b.
-    Endpoints are always pinned to path_a's endpoints.
-    """
-    n = max(len(path_a), len(path_b))
-    a = _resample_path(path_a, n)
-    b = _resample_path(path_b, n)
-    blended = [
-        [a[i][0] * (1 - alpha) + b[i][0] * alpha,
-         a[i][1] * (1 - alpha) + b[i][1] * alpha]
-        for i in range(n)
-    ]
-    # Pin start/end to real source/dest
-    blended[0]  = list(path_a[0])
-    blended[-1] = list(path_a[-1])
-    return blended
-
-
-def _make_synthetic_route(base: Dict, geometry: List, variant_idx: int) -> Dict:
-    """
-    Clone base OSRM dict with substituted geometry.
-    Slightly adjust distance/duration so scoring produces a natural spread.
-    Synthetic routes are always slightly worse than real ones.
-    """
-    # Small deterministic adjustment per variant (1–15% longer/worse)
-    scale = 1.0 + 0.003 * variant_idx   # grows slowly; never huge
-    return {
-        "distance": round(base.get("distance", 0) * scale, 1),
-        "duration": round(base.get("duration", 0) * scale, 1),
-        "geometry": {"type": "LineString", "coordinates": geometry},
-        "_synthetic": True,
-    }
-
-
-def _pad_to_target(real_routes: List[Dict], target: int = 50) -> List[Dict]:
-    """
-    Pad `real_routes` to `target` entries using geometric blends of real routes.
-    Returns real routes first, synthetic variants appended.
-    """
-    if len(real_routes) >= target:
-        return real_routes[:target]
-    if not real_routes:
-        return real_routes
-
-    result = list(real_routes)
-    seen_sets = [
-        _coord_set(r.get("geometry", {}).get("coordinates", []))
-        for r in result
-    ]
-    n_real = len(real_routes)
-
-    # Build all (i, j) pairs of real routes to blend from
-    pairs = [(i, j) for i in range(n_real) for j in range(i, n_real)]
-    # alpha values: evenly spaced inside (0, 1) to avoid duplicating endpoints
-    alphas = [k / (target + 1) for k in range(1, target + 1)]
-
-    attempt = 0
-    variant_idx = 0
-    max_attempts = target * 20
-
-    while len(result) < target and attempt < max_attempts:
-        attempt += 1
-
-        # Cycle through pairs and alphas
-        pair  = pairs[attempt % len(pairs)]
-        alpha = alphas[attempt % len(alphas)]
-
-        route_a = real_routes[pair[0]]
-        route_b = real_routes[pair[1]]
-        geom_a  = route_a.get("geometry", {}).get("coordinates", [])
-        geom_b  = route_b.get("geometry", {}).get("coordinates", [])
-
-        if len(geom_a) < 2:
-            continue
-
-        if pair[0] == pair[1] or len(geom_b) < 2:
-            # Self-blend: subsample to create a lower-res variant
-            n_sub = max(2, int(len(geom_a) * (0.6 + 0.4 * alpha)))
-            blended = _resample_path(geom_a, n_sub)
-            blended[0]  = list(geom_a[0])
-            blended[-1] = list(geom_a[-1])
-        else:
-            blended = _blend_paths(geom_a, geom_b, alpha)
-
-        if len(blended) < 2:
-            continue
-
-        # Dedup check with a lower threshold for synthetic routes (60%)
-        new_set = _coord_set(blended)
-        if any(_overlap_ratio(new_set, s) > 0.60 for s in seen_sets):
-            continue
-
-        synth = _make_synthetic_route(route_a, blended, variant_idx)
-        result.append(synth)
-        seen_sets.append(new_set)
-        variant_idx += 1
-
-    logger.info(
-        "Padded: %d real + %d synthetic = %d total",
-        n_real, len(result) - n_real, len(result),
-    )
-    return result
 
 
 # ── TSP Stop Reordering ───────────────────────────────────────────────────────
@@ -368,9 +249,11 @@ async def _optimize_stop_order(
 
 def _make_cache_key(slat: float, slon: float, dlat: float, dlon: float,
                     priority_coords: Optional[List[Tuple[float, float]]]) -> str:
-    base = f"{round(slat, 3)},{round(slon, 3)}|{round(dlat, 3)},{round(dlon, 3)}"
+    # Use 6 decimal places (~10 cm precision) for cache keys
+    # Ensures that even small moves by the user trigger a fresh (precisely snapped) route.
+    base = f"{round(slat, 6)},{round(slon, 6)}|{round(dlat, 6)},{round(dlon, 6)}"
     if priority_coords:
-        stops = "|".join(f"{round(p[0], 3)},{round(p[1], 3)}" for p in priority_coords)
+        stops = "|".join(f"{round(p[0], 6)},{round(p[1], 6)}" for p in priority_coords)
         base += f"|stops:{stops}"
     return hashlib.md5(base.encode()).hexdigest()
 
@@ -418,8 +301,8 @@ async def get_dynamic_routes(
     if not raw:
         raise RuntimeError("OSRM returned no routes for the given coordinates.")
 
-    # Deduplicate — threshold 0.72 keeps distinct urban alternatives
-    unique = deduplicate_routes(raw, threshold=0.72)
+    # Deduplicate — threshold 0.92 keeps distinct urban alternatives
+    unique = deduplicate_routes(raw, threshold=0.92)
     logger.info("Deduplicated: %d raw → %d unique", len(raw), len(unique))
 
     # Filter extreme outliers (>2.5× shortest) — keeps most alternatives

@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+import { TIME_PERIODS, getTimePeriod } from '../services/trafficPenalty'
 import './RouteList.css'
 
 // ── Score bar ──────────────────────────────────────────────────────────────────
@@ -19,10 +21,10 @@ function RouteCardFull({
   onNavigate, onReview, canNavigate,
   source, destination,
 }) {
-  const isBest       = rank === 1
-  const indicator    = isBest ? 'best' : 'alt'
+  const isBest = rank === 1
+  const indicator = isBest ? 'best' : 'alt'
   const scoreQuality = Math.round((1 - (route.composite_score || 0)) * 100)
-  const rankLabels   = { 1: 'BEST', 2: '2nd', 3: '3rd', 4: '4th' }
+  const rankLabels = { 1: 'BEST', 2: '2nd', 3: '3rd', 4: '4th' }
 
   return (
     <button
@@ -128,11 +130,12 @@ function RouteCardCompact({ route, rank, isSelected, onSelect }) {
   )
 }
 
-// ── Main Component ─────────────────────────────────────────────────────────────
+// ── Main Component ─────────────────────────────────────────────────────
 export default function RouteList({
   result, selectedRank,
   onSelectRoute, onNavigateRoute, onReviewRoute,
   canNavigate,
+  departureHour,
 }) {
   if (!result || !result.best_route) {
     return (
@@ -146,13 +149,18 @@ export default function RouteList({
     )
   }
 
+  // Detect active time period
+  const periodId = departureHour != null ? getTimePeriod(departureHour) : 'AFTERNOON'
+  const period = TIME_PERIODS[periodId]
+  const isBaselineTime = periodId === 'AFTERNOON'
+
   // Build ordered list — rich data for top 4, summary for the rest
   const richByRank = new Map()
   richByRank.set(1, { rank: 1, ...result.best_route })
-  ;(result.alternative_routes || []).forEach((r, i) => {
-    const rank = i + 2
-    richByRank.set(rank, { rank, ...r })
-  })
+    ; (result.alternative_routes || []).forEach((r, i) => {
+      const rank = i + 2
+      richByRank.set(rank, { rank, ...r })
+    })
 
   const summary = result.all_routes_summary || []
   let allRoutes = []
@@ -170,22 +178,35 @@ export default function RouteList({
 
   allRoutes.sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999))
 
-  const topRoutes  = allRoutes.filter(r => (r.rank ?? 999) <= 4)
+  const topRoutes = allRoutes.filter(r => (r.rank ?? 999) <= 4)
   const restRoutes = allRoutes.filter(r => (r.rank ?? 999) > 4)
 
   return (
     <div className="route-list">
 
       {/* ── Header ── */}
-      <div className="rl-header">
+        <div className="rl-header">
         <span className="material-icons-round">format_list_numbered</span>
-        <div>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <h3 className="rl-title">Route Comparison</h3>
           <p className="rl-subtitle">
             {allRoutes.length} routes evaluated · Mode: {result.mode}
             {result.priority_stops_resolved > 0 &&
               ` · ${result.priority_stops_resolved} stop${result.priority_stops_resolved > 1 ? 's' : ''} via`}
           </p>
+        </div>
+        {/* Time period badge */}
+        <div
+          className="rl-time-badge"
+          style={{
+            borderColor: period.color,
+            background: period.glowColor,
+            color: period.color,
+          }}
+          title={`Ranked for ${period.label}: ${period.description}`}
+        >
+          <span className="rl-time-badge-emoji">{period.emoji}</span>
+          <span className="rl-time-badge-label">{period.label}</span>
         </div>
       </div>
 
